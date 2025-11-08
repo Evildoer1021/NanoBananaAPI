@@ -1,0 +1,35 @@
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+
+from google import genai
+from PIL import Image
+from io import BytesIO
+
+import warnings
+from urllib3.exceptions import NotOpenSSLWarning
+
+print ("Thingie")
+warnings.filterwarnings("ignore", category=NotOpenSSLWarning)
+
+api_key = os.getenv("GEMINI_API_KEY")
+
+client = genai.Client(api_key=api_key)
+
+prompt = f""" Remove the person from the background. It should be an empty background"""
+
+image = Image.open("/Users/sehyunk/Desktop/RapunzelBald.png")
+
+response = client.models.generate_content(
+    model="gemini-2.5-flash-image-preview",
+    contents=[prompt, image]
+)
+
+for part in response.candidates[0].content.parts:
+    if part.text is not None:
+        print(part.text)
+    elif part.inline_data is not None:
+        image = Image.open(BytesIO(part.inline_data.data))
+        image.save("finished.png")
+        print("FINISHED WITH GENERATION")

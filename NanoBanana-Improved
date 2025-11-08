@@ -19,66 +19,40 @@ client = genai.Client(api_key=api_key)
 
 #Deciding on which template to use
 
-person = input("Who would you like impersonate? \n e for Elsa, a for Ariel, r for Rapunzel")
+person = input("Who would you like impersonate? \n  a for Ariel, r for Rapunzel")
 
-prompt = """ Make the person into a bald, white mannequin, focusing on the hands especially if they are holding objects or wearing long sleeves, thighs and legs. Absolutely keep all clothes."""
-if person == "e":
-    image = Image.open("/Users/sehyunk/Desktop/Elsa.png")
-    GPT_Generated_Description = "Standing slightly angled toward the camera, the person holds a small Starbucks cup with a light-blue drink in her right hand. Bringing the cup close to her lips, she sips through a white straw with a relaxed but deliberate posture. Keeping her right elbow bent, she positions her forearm near her chest while her left arm remains lowered and partially obscured. Tilting her head subtly to the right, she maintains an upright stance with squared shoulders. Narrowing her eyes slightly, she conveys a confident, almost teasing expression. Directing her gaze straight toward the lens, she appears to make eye contact with the viewer. Leaning slightly forward, she enhances the sense of engagement with her surroundings. Standing indoors, she is framed by a softly blurred, blue-toned background."
+
+
 if person == "a":
-    image = Image.open("/Users/sehyunk/Desktop/Ariel.png")
+    image = Image.open("/Users/sehyunk/Desktop/AI_Internship/Images/ArielOutline.png")
+    image2 = Image.open("/Users/sehyunk/Desktop/AI_Internship/Images/ArielModel.png")
     GPT_Generated_Description = "Leans back slightly on her left arm while sitting at the edge of a pool, with her left leg bent and right leg extended out of frame. Holds a clear plastic cup filled with a bright blue drink in her right hand, sipping through a white straw. Tilts her head subtly to the right, giving a soft, composed expression. Gazes downward and to her left, avoiding eye contact with the camera or viewer. Slightly parts her lips around the straw as she drinks. Wears a two-piece outfit that includes a halter top and high-waisted bottom with a decorative element on the waistband. Keeps her posture relaxed, creating a casual and effortless vibe. Appears to be illuminated by warm, natural sunlight, enhancing the poolside atmosphere."
 if person == "r":
-    image = Image.open("/Users/sehyunk/Desktop/Rapunzel.png")
-    GPT_Generated_Description = "is sitting upright on a bed with her back slightly supported by pillows, surrounded by a cozy setup of pastel bedding. Her right hand holds a retro-style pink phone receiver close to her ear, while her left hand supports a matching pink mobile phone connected by a coiled cord. Her legs are bent comfortably to one side, resting on the bed. She faces slightly toward the viewer with a relaxed expression that suggests quiet confidence or amusement. Her gaze is directed forward, meeting the viewer’s eyes as if in casual conversation. Subtle fairy lights glow behind her, casting warm reflections across the room. Her body language conveys comfort and ease, as though caught mid-chat in a soft evening moment."
+    image = Image.open("/Users/sehyunk/Desktop/AI_Internship/Images/RapunzelOutline.png")
+    image2 = Image.open("/Users/sehyunk/Desktop/AI_Internship/Images/RapunzelModel.png")
+    
+    GPT_Generated_Description = "Sits reclined against pillows on a bed, upper body angled slightly to the right. Wears a lavender knit sweater with long sleeves that reach her wrists and light-colored shorts that reveal her legs. Her right arm is bent at the elbow, raising her right hand to hold a pink phone receiver to her right ear. Her left arm rests across her lap, with her left hand gripping a matching pink phone case positioned near her waist. Her right leg is bent upward towards the right corner of the image, while her left leg is not visible at all at any point. She looks directly toward the viewer with a calm, faintly smiling expression, appearing to make eye contact. The bedding around her is in pastel tones of pink and lavender. Warm string lights softly illuminate the background, enhancing the relaxed atmosphere."
 
-# Call the API to generate mannequin
-response = client.models.generate_content(
-    model="gemini-2.5-flash-image-preview",
-    contents=[prompt, image]
-)
 
-# The response can contain both text and image data.
-# Iterate through the parts to find and save the image.
-for part in response.candidates[0].content.parts:
-    if part.text is not None:
-        print(part.text)
-    elif part.inline_data is not None:
-        image = Image.open(BytesIO(part.inline_data.data))
-        image.save("mannequin.png")
+
+
 
 #Creating bolded outline
-
-prompt = """ Remove the white mannequin, and fill the blanks with the background but absolutely keep a bolded outline of the mannequin body structure. Absolutely keep any objects that were being held. Additionally, keep the clothes of the mannequin on the bolded outline"""
 face = input("Which face would you like to use: type 1, 2, or 3")
 if face == "1":
-    image1 = Image.open("/Users/sehyunk/Desktop/face.png")
+    image1 = Image.open("/Users/sehyunk/Desktop/AI_Internship/Images/face.png")
 if face == "2":
-    image1 = Image.open("/Users/sehyunk/Desktop/face2.png")
+    image1 = Image.open("/Users/sehyunk/Desktop/AI_Internship/Images/face2.png")
 if face == "3":
-    image1 = Image.open("/Users/sehyunk/Desktop/face3.png")
-
-response = client.models.generate_content(
-    model="gemini-2.5-flash-image-preview",
-    contents=[prompt, image, image1]
-    
-)
-
-for part in response.candidates[0].content.parts:
-    if part.text is not None:
-        print(part.text)
-    elif part.inline_data is not None:
-        image = Image.open(BytesIO(part.inline_data.data))
-        image.save("outline.png")
+    image1 = Image.open("/Users/sehyunk/Desktop/AI_Internship/Images/face3.png")
 
 
-
-prompt = f"""Have this person be in the empty background while matching her face and body over the bolded outline and wearing the clothes given. She should be {GPT_Generated_Description}, Absolutely do not change hairstyle, especially if long. Absolutely do not change background. There should be none of the bolded outline remaining"""
+prompt = f"""Have this person be in the empty background while matching her face and body to the bolded outline and wearing the clothes given from the reference image. She should be {GPT_Generated_Description}, Absolutely do not change hairstyle, especially if long. Absolutely do not change background. There should be none of the bolded outline remaining; remove all of the bolded outline (be especially careful at the corner's of the image)"""
 
 #Creation of finished head swap
 response = client.models.generate_content(
     model="gemini-2.5-flash-image-preview",
-    contents=[prompt, image, image1]
+    contents=[prompt, image, image1, image2]
 )
 # The response can contain both text and image data.
 # Iterate through the parts to find and save the image.
